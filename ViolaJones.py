@@ -11,13 +11,19 @@ def load_images(path, label):
     return images
 
 def classify(classifiers, image):
+    print "classifier size: ",len(classifiers)
     sum = 0
     for c in classifiers:
-        # c is a weak classifier. c[0] is the important feature and c[1] its weight
-        if c[0].get_vote(image)>0:
+        # c is a weak classifier [a list of tuple(feature,weight of that feature)].
+        # c[0] is the important feature and c[1] its weight
+        vote = c[0].get_vote(image)
+        if vote>0:
+            #print 'okay'
+            print "matched feature: ",c[0]
             c[0].drawbox(image)
            
-        sum+=c[0].get_vote(image)*c[1]
+        sum+=vote*c[1]
+        #print c[0].threshold, c[1]
     if sum>0:
         return 1
     else:
@@ -52,7 +58,7 @@ if __name__ == "__main__":
         result = classify(classifiers, image)
         if image.label == 1 and result == 1:
             #image.originalimage.show()
-            image.show()
+            #image.show()
             correct_faces += 1
         if image.label == -1 and result == -1:
             correct_non_faces += 1

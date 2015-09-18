@@ -26,9 +26,15 @@ class HaarLikeFeature(object):
         self.bottom_right = (position[0] + width, position[1] + height)
         self.width = width
         self.height = height
-        self.threshold = threshold
-        self.polarity = polarity
+        self.threshold = threshold #threshold
+        self.polarity = polarity #Toggle
         self.score = {}
+        
+        self.Epsilon = 2 #default value (upper bound of the empirical loss)
+        self.margin = 0 #error margin
+        
+    def __str__(self):
+        return str(self.type)+" pos: "+str(self.top_left)
         
     def get_score(self, intImage):
         if self.score.get(intImage,None) != None:
@@ -73,6 +79,7 @@ class HaarLikeFeature(object):
             #        cv2.rectangle(integralimage.opencvimg, self.top_left, self.bottom_right, (255,255,255),1)
            
         integralimage.rectangledraw([self.top_left,self.bottom_right])
+        #print self.top_left,self.bottom_right
         
     def setthreshold(self,t):
         self.threshold = t

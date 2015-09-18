@@ -3,7 +3,7 @@ import  os, sys
 import operator
 from PIL import Image
 # loads all the gif of jpg images (currently must be gray scale) in the path folder and converts them into histogram equalized image. 
-path = 'training/faces/test'
+path = 'training/faces'
 
 def equalize(h):
 
