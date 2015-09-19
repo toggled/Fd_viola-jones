@@ -1,8 +1,11 @@
 import AdaBoost
 from IntegralImage import IntegralImage
 import os,sys
-
+import dill as pickle
     
+LEARN = False
+FILENAME = 'decision_stamps.dsp'
+
 def load_images(path, label):
     images = []
     for _file in os.listdir(path):
@@ -43,25 +46,39 @@ if __name__ == "__main__":
     print '..done. ' + str(len(non_faces)) + ' non faces loaded.\n'
     
     T = 20
-    classifiers = AdaBoost.learn(faces, non_faces, T)
-    
-    print 'Loading test faces..'
-    faces = load_images('training/faces/test', 1)
-    print '..done. ' + str(len(faces)) + ' faces loaded.\n\nLoading test non faces..'
-    non_faces = load_images('training/nonfaces/test', -1)
-    print '..done. ' + str(len(non_faces)) + ' non faces loaded.\n'
-    
-    print 'Validating selected classifiers..'
-    correct_faces = 0
-    correct_non_faces = 0
-    for image in faces:
-        result = classify(classifiers, image)
-        if image.label == 1 and result == 1:
-            #image.originalimage.show()
-            #image.show()
-            correct_faces += 1
-        if image.label == -1 and result == -1:
-            correct_non_faces += 1
-            #image.originalimage.show()
+    if LEARN:
+        classifiers = AdaBoost.learn(faces, non_faces, T)
+        #STore it . Pickle can't store imagingdraw object which comes inside IntegralImage class. So self.score for
+        # the haarfeatures should not hash by integralimage object. just make it empty to avoid error. it'll not be used
+        # in test images anyway.
+        
+        for haarfeature,weight in classifiers:
+            haarfeature.score = {}
             
-    print '..done. Result:\n  Faces: ' + str(correct_faces) + '/' + str(len(faces)) + '\n  non-Faces: ' + str(correct_non_faces) + '/' + str(len(non_faces))
+        with open(FILENAME,'wb') as fileobj:
+            pickle.dump(classifiers,fileobj)
+        
+    else:
+        with open(FILENAME,'r') as fileobj:
+            classifiers = pickle.load(fileobj)
+        
+        print 'Loading test faces..'
+        faces = load_images('training/faces/test', 1)
+        print '..done. ' + str(len(faces)) + ' faces loaded.\n\nLoading test non faces..'
+        non_faces = load_images('training/nonfaces/test', -1)
+        print '..done. ' + str(len(non_faces)) + ' non faces loaded.\n'
+    
+        print 'Validating selected classifiers..'
+        correct_faces = 0
+        correct_non_faces = 0
+        for image in faces+non_faces:
+            result = classify(classifiers, image)
+            if image.label == 1 and result == 1:
+                #image.originalimage.show()
+                image.show()
+                correct_faces += 1
+            if image.label == -1 and result == -1:
+                correct_non_faces += 1
+                #image.originalimage.show()
+            
+        print '..done. Result:\n  Faces: ' + str(correct_faces) + '/' + str(len(faces)) + '\n  non-Faces: ' + str(correct_non_faces) + '/' + str(len(non_faces))

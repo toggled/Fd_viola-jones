@@ -62,4 +62,4 @@ class IntegralImage:
     def show(self):
         self.pilimg.show()
     def rectangledraw(self,cordinate):
-        self.fordrawing.rectangle(cordinate)
+        self.fordrawing.rectangle(cordinate,fill=128)

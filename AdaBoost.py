@@ -51,8 +51,8 @@ def learn(positives, negatives, T):
         feature_votes = np.array(map(lambda im: [im, feature.get_vote(im)], images))
         votes[feature] = feature_votes
         i += 1
-       # if i % 10 == 0:
-            #break   #@todo: remove
+        if i % 10 == 0:
+            break   #@todo: remove
           #  print str(i) + ' features of ' + str(len(features)) + ' done'
     print '..done.\n'
     
@@ -82,7 +82,7 @@ def learn(positives, negatives, T):
         x = 1
         # select best weak classifier
         for feature, feature_votes in votes.iteritems():
-            print "feature number: ",x, feature.type,'position: ',feature.top_left
+            #print "feature number: ",x, feature.type,'position: ',feature.top_left
             x+=1
             if feature in used:
                 #print 'continue'
